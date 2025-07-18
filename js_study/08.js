@@ -124,34 +124,61 @@ const products = [
 ];
 
 // 1. 50000원 이상인 제품만 필터링해서 expensiveProducts 배열에 넣고 출력
-const expensiveProducts = [];
-for (let i = 0; i < products.length; i++) {
-  S;
-  if (products[i].price >= 50000) {
-    expensiveProducts.push(products[i]);
-  }
-}
-console.log("expensiveProducts:", expensiveProducts);
+// const expensiveProducts = [];
+// for (let i = 0; i < products.length; i++) {
+//   S;
+//   if (products[i].price >= 50000) {
+//     expensiveProducts.push(products[i]);
+//   }
+// }
+// console.log("expensiveProducts:", expensiveProducts);
+
+//1.
+const expensiveProducts = products.filter((product) => product.price >= 50000);
+console.log(expensiveProducts);
 
 // 2. 각 제품의 이름과 가격만 포함하는 productNamesAndPrices 배열 만들기
-const productNamesAndPrices = [];
-for (let i = 0; i < products.length; i++) {
-  productNamesAndPrices.push({
-    name: products[i].name,
-    price: products[i].price,
-  });
-}
-console.log("productNamesAndPrices:", productNamesAndPrices);
+// const productNamesAndPrices = [];
+// for (let i = 0; i < products.length; i++) {
+//   productNamesAndPrices.push({
+//     name: products[i].name,
+//     price: products[i].price,
+//   });
+// }
+// console.log("productNamesAndPrices:", productNamesAndPrices);
+const productNamesAndPrices = products.map((product) => ({
+  name: product.name,
+  price: product.price,
+}));
+console.log(productNamesAndPrices);
 
 // 3. category가 전자제품인 제품만 선택해서
 //     이름과 가격(10% 할인 적용)만 담은 discountProducts 배열 만들기
-const discountProducts = [];
-for (let i = 0; i < products.length; i++) {
-  if (products[i].category === "전자제품") {
-    discountProducts.push({
-      name: products[i].name,
-      price: Math.round(products[i].price * 0.9), // 소수점 반올림
-    });
-  }
-}
-console.log("discountProducts:", discountProducts);
+// const discountProducts = [];
+// for (let i = 0; i < products.length; i++) {
+//   if (products[i].category === "전자제품") {
+//     discountProducts.push({
+//       name: products[i].name,
+//       price: Math.round(products[i].price * 0.9), // 소수점 반올림
+//     });
+//   }
+// }
+// console.log("discountProducts:", discountProducts);
+const discountProducts = products
+  .filter((product) => product.category === "전자제품")
+  .map((product) => ({
+    name: product.name,
+    price: product.price * 0.9,
+  }));
+console.log(discountProducts);
+
+// newConfig를 만드세요.
+// theme는 "light"로 변경하고,
+// padding: "20px" 속성을 새로 추가하세요.
+
+// 객체 Spread 문법을 사용하여 newConfig 생성
+//==================================================
+const arr1 = [1, 2, 3];
+const arr2 = [4, 5];
+
+// 배열 Spread 문법을 사용하여 배열 합치기
