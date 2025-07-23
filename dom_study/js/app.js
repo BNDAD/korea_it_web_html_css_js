@@ -6,7 +6,7 @@ function app() {
 		title: "Commponent Study",
 		date: new Date().toLocaleDateString(),
 		//현재 날짜를 지역 형식에 맞게 문자열로 가져온다
-		author: "이동윤",
+		author: "김성엽",
 	};
 
 	return `
