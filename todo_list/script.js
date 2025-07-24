@@ -1,56 +1,135 @@
-// HTML에서 id가 todoInput인 입력창 요소 가져오기
 const todoInput = document.querySelector("#todoInput");
-
-// HTML에서 id가 addTodoBtn인 추가 버튼 요소 가져오기
 const addTodoBtn = document.querySelector("#addTodoBtn");
-
-// TODO 목록을 표시할 영역(id가 todoList인 ul) 가져오기
 const todoList = document.querySelector("#todoList");
 
-// 투두 항목 전체를 저장할 배열, 빈 배열로 초기화
 let todos = [];
-
-// 각 투두 아이템에 붙일 고유 id 값 초기화, 1부터 시작
 let nextTodoId = 1;
 
-/* 새로운 투두 항목을 추가하는 함수 */
-function addTodo() {
-    // 입력창에 입력된 텍스트 가져오기, 앞뒤 공백은 제거(trim)
-    const todoText = todoInput.value.trim();
+function renderTodo() {
+	todoList.innerHTML = "";
 
-    // 만약 빈 문자열이라면
-    if (todoText === "") {
-        alert("할 일을 입력해주세요!"); // 사용자에게 경고창 띄우기
-        return; // 함수 중단, 항목을 추가하지 않음
-    }
+	todos.forEach((todo) => {
+		const listItem = document.createElement("li");
+		listItem.dataset.id = todo.id;
+		//요소에 추가적인 사용자 정의 데이터 저장
+		//개발자가 특정 HTML 요소에 추가적인 데이터를 저장할 목적으로 사용
+		//브러우저는 이 속성들을 특별히 해석하지 않는다
 
-    // 새 투두 아이템 객체 생성
-    const newTodo = {
-        id: nextTodoId++, // 현재 id 값 대입 후 값 1 증가
-        text: todoText,   // 입력된 텍스트 저장
-        isEditing: false, // 수정 중인지 상태 표시용 (현재는 false로 초기화)
-    };
+		if (todo.isEditing) {
+			listItem.classList.add("editing");
 
-    // todos 배열에 새 투두 아이템 추가
-    todos.push(newTodo);
+			listItem.innerHTML = `
+				<input type="text" class="edit-input" value="${todo.text}">
+				<div class="todo-actions">
+					<button class="save-btn">저장</button>
+					<button class="cancel-btn">취소</button>
+				</div>
+			`;
+		} else {
+			listItem.innerHTML = `
+				<span class="todo-text">${todo.text}</span>
+				<div class="todo-actions">
+					<button class="edit-btn">수정</button>
+					<button class="delete-btn">삭제</button>
+				</div>
+			`;
+		}
 
-    // (개발용) 현재 전체 투두 목록을 콘솔에 출력해 확인
-    console.log(todos);
-
-    // 입력창 초기화 (입력값 지우기)
-    todoInput.value = "";
-
-    // 입력창에 다시 포커스 맞춰서 바로 새 입력 가능하도록
-    todoInput.focus();
+		todoList.appendChild(listItem);
+	});
 }
 
-/* 버튼 클릭하면 addTodo 함수 실행 */
+function addTodo() {
+	const todoText = todoInput.value.trim(); //입력된 텍스트 가져와서 양쪽 공백제거
+
+	if (todoText === "") {
+		alert("할 일을 입력해주세요!");
+		return;
+	}
+
+	const newTodo = {
+		id: nextTodoId++,
+		text: todoText,
+		isEditing: false, //수정 중인지 여부를 나타내는 플래그
+	};
+
+	todos.push(newTodo);
+	console.log(todos);
+	todoInput.value = "";
+	todoInput.focus();
+
+	renderTodo();
+}
+
+function deleteTodo(id) {
+	if (!confirm("정말 삭제하시겠습니까?")) {
+		return;
+	} else {
+		todos = todos.filter((todo) => todo.id !== id);
+		renderTodo();
+	}
+}
+
+function editTodo(id) {
+	todos = todos.map((todo) =>
+		todo.id === id
+			? { ...todo, isEditing: true }
+			: { ...todo, isEditing: false }
+	);
+	renderTodo();
+
+	const editInput = todoList.querySelector(`li[data-id="${id}"] .edit-input`);
+	if (editInput) {
+		editInput.focus();
+		editInput.select();
+	}
+}
+
+function saveTodo(id, newText) {
+	if (newText.trim() === "") {
+		alert("수정할 내용을 입력해주세요.");
+		return;
+	}
+	todos = todos.map((todo) =>
+		todo.id === id
+			? { ...todo, text: newText.trim(), isEditing: false }
+			: todo
+	);
+	renderTodo();
+}
+
+function cancelTodo(id) {
+	todos = todos.map((todo) =>
+		todo.id === id ? { ...todo, isEditing: false } : todo
+	);
+	renderTodo();
+}
+
 addTodoBtn.addEventListener("click", addTodo);
 
-/* 입력창에서 키보드 눌렀을 때 이벤트 */
 todoInput.addEventListener("keypress", (event) => {
-    // 엔터(Enter) 키가 눌렸으면
-    if (event.key === "Enter") {
-        addTodoBtn.click(); // 추가 버튼 클릭 이벤트를 강제로 실행하여 투두 추가
-    }
+	if (event.key === "Enter") {
+		addTodoBtn.click();
+	}
+});
+
+todoList.addEventListener("click", (event) => {
+	const target = event.target; //클릭된 요소
+	const listItem = target.closest("li[data-id]");
+	//클릭된 요소의 가장 가까운 부모 li 근데 이제 data에 id 속성을 가진
+
+	if (!listItem) return; //li 요소를 찾기 못했다면 함수 종료
+
+	const todoId = parseInt(listItem.dataset.id);
+
+	if (target.classList.contains("delete-btn")) {
+		deleteTodo(todoId);
+	} else if (target.classList.contains("edit-btn")) {
+		editTodo(todoId);
+	} else if (target.classList.contains("save-btn")) {
+		const editInput = listItem.querySelector(".edit-input");
+		saveTodo(todoId, editInput.value);
+	} else if (target.classList.contains("cancel-btn")) {
+		cancelTodo(todoId);
+	}
 });
