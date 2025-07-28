@@ -32,7 +32,7 @@ async function getData() {
 		console.log(postData);
 
 		postContainer.innerHTML = `
-            <h2>${postData.title}<h2/>
+            <h2>${postData.title}</h2>
             <p>${postData.body}</p>
         `;
 
