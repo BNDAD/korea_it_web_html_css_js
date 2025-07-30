@@ -63,11 +63,17 @@ form {
 	width: 400px;
 }
 
-input {
+input,
+textarea {
 	padding: 10px;
 	border: 1px solid #dddddd;
 	border-radius: 5px;
 	margin-bottom: 10px;
+}
+
+textarea {
+	height: 150px;
+	resize: none;
 }
 
 .btn-submit {
@@ -82,4 +88,25 @@ input {
 
 .btn-submit:hover {
 	background-color: #0056b3;
+}
+
+/* 게시물 목록 스타일 */
+#board-list {
+	width: 100%;
+	max-width: 700px;
+	list-style: none;
+	padding: 0;
+}
+
+#board-list > li {
+	padding: 15px;
+	border: 1px solid #dddddd;
+	border-radius: 5px;
+	margin-bottom: 10px;
+	cursor: pointer;
+	transition: all 0.3s ease;
+}
+
+#board-list > li:hover {
+	background-color: #f9f9f9;
 }
