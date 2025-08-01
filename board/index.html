@@ -10,10 +10,24 @@
 		<div class="container">
 			<header>
 				<nav>
-					<button id="nav-signin">로그인</button>
-					<button id="nav-signup">회원가입</button>
-					<button id="nav-board">게시판</button>
-					<button id="nav-write">글쓰기</button>
+					<button id="nav-signin">
+						<span>로그인</span>
+					</button>
+					<button id="nav-signup">
+						<span>회원가입</span>
+					</button>
+					<button id="nav-logout">
+						<span>로그아웃</span>
+					</button>
+					<button id="nav-password">
+						<span>비밀번호 변경</span>
+					</button>
+					<button id="nav-board">
+						<span>게시판</span>
+					</button>
+					<button id="nav-write">
+						<span>글쓰기</span>
+					</button>
 				</nav>
 			</header>
 			<main>
@@ -55,6 +69,30 @@
 						/>
 						<button type="submit" class="btn-submit">
 							회원가입
+						</button>
+					</form>
+				</div>
+				<!-- 비밀번호 변경 -->
+				<div id="page-password" class="page">
+					<h2>비밀번호 변경</h2>
+					<form id="password-form">
+						<input
+							type="password"
+							id="old-password"
+							placeholder="기존 비밀번호"
+						/>
+						<input
+							type="password"
+							id="new-password"
+							placeholder="새 비밀번호"
+						/>
+						<input
+							type="password"
+							id="new-confirm-password"
+							placeholder="새 비밀번호 확인"
+						/>
+						<button type="submit" class="btn-submit">
+							변경하기
 						</button>
 					</form>
 				</div>
