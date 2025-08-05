@@ -16,11 +16,13 @@ const pagePassword = document.querySelector("#page-password");
 const pageBoard = document.querySelector("#page-board");
 const pageWrite = document.querySelector("#page-write");
 const pageDetail = document.querySelector("#page-detail");
+const pageUpdate = document.querySelector("#page-update");
 
 //로그인 및 회원가입 폼
 const signupForm = document.querySelector("#signup-form");
 const signinForm = document.querySelector("#signin-form");
 const passwordForm = document.querySelector("#password-form");
+const updateForm = document.querySelector("#update-form");
 
 //게시판 목록
 const boardList = document.querySelector("#board-list");
@@ -33,8 +35,13 @@ const detailTitle = document.querySelector("#detail-title");
 const detailUserId = document.querySelector("#detail-userid");
 const detailContent = document.querySelector("#detail-content");
 const backBtn = document.querySelector("#back-btn");
+const updateBtn = document.querySelector("#update-btn");
 const deleteBtn = document.querySelector("#delete-btn");
 const btnBox = document.querySelector("#btn-box");
+
+//게시물 수정
+const updateTitleInput = document.querySelector("#update-title");
+const updateContentInput = document.querySelector("#update-content");
 
 let boards = [];
 
@@ -133,7 +140,7 @@ async function getBoard(boardId) {
 	const userId = parseInt(userInfo.jti);
 
 	if (!accessToken) {
-		alert("게시물을 조회하려면 로그인이 필요합니다.");
+		alert("게시물을 조하려면 로그인이 필요합니다.");
 		changePages(pageSignin);
 		return;
 	}
@@ -153,12 +160,85 @@ async function getBoard(boardId) {
 			detailUserId.innerText = `유저 ID : ${responseData.data.userId}`;
 			detailContent.innerText = responseData.data.content;
 			deleteBtn.setAttribute("data-board-id", responseData.data.boardId);
+			updateBtn.setAttribute("data-board-id", responseData.data.boardId);
 
 			btnBox.classList.remove("active");
 			if (responseData.data.userId == userId) {
 				btnBox.classList.add("active");
 			}
 			changePages(pageDetail);
+		}
+	} catch (error) {}
+}
+
+async function updateBoard() {
+	const accessToken = localStorage.getItem("AccessToken");
+
+	const boardId = updateBtn.dataset.boardId;
+
+	if (!accessToken) {
+		alert("게시물을 조회하려면 로그인이 필요합니다.");
+		changePages(pageSignin);
+		return;
+	}
+
+	try {
+		const response = await fetch(`${API_BASE_URL}/board/${boardId}`, {
+			method: "GET",
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+			},
+		});
+
+		const responseData = await response.json();
+
+		if (responseData.status === "success") {
+			updateTitleInput.value = responseData.data.title;
+			updateContentInput.value = responseData.data.content;
+			changePages(pageUpdate);
+		}
+	} catch (error) {}
+}
+
+async function update(event) {
+	event.preventDefault();
+
+	const accessToken = localStorage.getItem("AccessToken");
+
+	const boardId = updateBtn.dataset.boardId;
+
+	if (!accessToken) {
+		alert("게시물을 조회하려면 로그인이 필요합니다.");
+		changePages(pageSignin);
+		return;
+	}
+
+	const updateData = {
+		boardId: boardId,
+		title: updateTitleInput.value,
+		content: updateContentInput.value,
+	};
+
+	try {
+		const response = await fetch(`${API_BASE_URL}/board/update`, {
+			method: "POST",
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(updateData),
+		});
+
+		const responseData = await response.json();
+
+		if (responseData.status !== "success") {
+			alert(responseData.message);
+			await renderBoard();
+			changePages(pageBoard);
+		} else {
+			alert(responseData.message);
+			await renderBoard();
+			changePages(pageBoard);
 		}
 	} catch (error) {}
 }
@@ -436,12 +516,14 @@ navWrite.addEventListener("click", () => {
 });
 
 backBtn.addEventListener("click", renderBoard);
+updateBtn.addEventListener("click", updateBoard);
 deleteBtn.addEventListener("click", removeBoard);
 
 signupForm.addEventListener("submit", signupHandler);
 signinForm.addEventListener("submit", signinHandler);
 writeForm.addEventListener("submit", addBoard);
 passwordForm.addEventListener("submit", changePassword);
+updateForm.addEventListener("submit", update);
 
 //HTML 문서가 완전히 로드되고 파싱되었을때
 document.addEventListener("DOMContentLoaded", async () => {
